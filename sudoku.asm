@@ -303,16 +303,22 @@ TITLE PROJETO 2 - SUDOKU
 
         MOV AH, 01
         INT 21H
+
+        CONTINUA2:
+        CMP AL, '0'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para nodigit
+        JNGE PROXIMO2
+        CMP AL, '9'
+        JNLE PROXIMO2                          ;
                         
-        MOV matriz1[BX][SI], AL              ; passa o numero lido para a posicao [bx][si] da matriz
+        MOV matriz1[BX][SI], AL                 ; passa o numero lido para a posicao [bx][si] da matriz
         RET
     leitura1 endp
 
     ;    leitura1 proc
     ;PRINT digitecordenadas
     ;
-    ;XOR BX,BX                               ; zera os registrador que serviram como referencia na leitura da matriz
-    ;XOR SI, SI                              ;
+    ;XOR BX,BX                                  ; zera os registrador que serviram como referencia na leitura da matriz
+    ;XOR SI, SI                                 ;
 
 
     ;MOV BX , 80
@@ -320,7 +326,7 @@ TITLE PROJETO 2 - SUDOKU
 
     ;MOV AH, 01
     ;INT 21H                 
-    ;MOV matriz1[BX], AL              ; passa o numero lido para a posicao [bx][si] da matriz
+    ;MOV matriz1[BX], AL                        ; passa o numero lido para a posicao [bx][si] da matriz
     ;RET
 
     ;leitura1 endp
