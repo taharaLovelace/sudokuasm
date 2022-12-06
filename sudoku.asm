@@ -3,8 +3,6 @@ TITLE PROJETO 2 - SUDOKU
 .data
     LINHA   EQU  9
     COLUNA  EQU  9
-    lin db ?
-    col db ?
     matriz1 db  4,?,?,3,?,8,?,?,6
             db  2,3,?,?,6,?,4,?,?
             db  ?,?,9,4,?,?,7,?,?
@@ -21,7 +19,8 @@ TITLE PROJETO 2 - SUDOKU
     TERCEIRALINHA DB 10,13,200,2 DUP(11 DUP (205),202),11 DUP (205),188,'$'
     sudoku db "            BEM VINDO AO SUDOKU", 10, '$'
     aperte db 10, "     Aperte enter para iniciar o jogo$"
-    cordenadasAJ db "  A   B   C   D   E   F   G   H   I   $"
+    cordenadasAI db "  A   B   C   D   E   F   G   H   I   $"
+    cordenadas19 db "123456789"
     digitecordenadas db 10, "Digite a coordenada que deseje atribuir um valor: $"
     digitenumero db 10, "Digite um numero:  $"
     
@@ -54,7 +53,7 @@ TITLE PROJETO 2 - SUDOKU
         XOR AL, AL     
         XOR CX, CX     
         MOV DX, 184FH   
-        MOV BH, 5CH    
+        MOV BH, 5H    
         INT 10H
     endm
 
@@ -99,9 +98,9 @@ TITLE PROJETO 2 - SUDOKU
         MOV AX, @DATA;
         MOV DS, AX          ; inicia o segmento de dados
         paginaprincipal
-        CALL imrpime_matriz 
+        CALL imprime_matriz 
         call leitura1
-        call imrpime_matriz  
+        call imprime_matriz  
 
     FIM:
         MOV AH,4CH
@@ -109,11 +108,12 @@ TITLE PROJETO 2 - SUDOKU
     main endp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    imrpime_matriz proc
+    imprime_matriz proc
 
         paginasecundaria
-        PRINT cordenadasAJ
+        PRINT cordenadasAI
         pulalinha
+        XOR DI, DI
         XOR BX,BX
         XOR SI,SI
         PRINT MOLDURA
@@ -150,11 +150,13 @@ TITLE PROJETO 2 - SUDOKU
                     SPACE
                     BARRADUPLA
             DEC CL
-            JNZ OUT3         
-        DEC CH
+            JNZ OUT3   
         MOV AH, 02
-        MOV DL, "1"
-        INT 21H  
+        SPACE
+        MOV DL, cordenadas19[DI]
+        INC DI 
+        INT 21H      
+        DEC CH
         JNZ OUT1
         ADD BX, COLUNA
         XOR SI,SI
@@ -174,7 +176,7 @@ TITLE PROJETO 2 - SUDOKU
         RET
         RESTART:
         JMP OUT4
-    imrpime_matriz endp
+    imprime_matriz endp
 
    leitura1 proc
     PRINT digitecordenadas
@@ -182,77 +184,57 @@ TITLE PROJETO 2 - SUDOKU
     XOR SI, SI                              ;
     MOV AH, 01
     INT 21H
-    AND AL, 0FH  
-    CMP AL, 1
+    CMP AL, 31h
     JE UM
-    CMP AL, 2
+    CMP AL, 32h
     JE DOIS
-    CMP AL, 3
+    CMP AL, 33h
     JE TRES
-    CMP AL, 4
+    CMP AL, 34h
     JE QUATRO
-    CMP AL, 5
+    CMP AL, 35h
     JE CINCO
-    CMP AL, 6
+    CMP AL, 36h
     JE SEIS
-    CMP AL, 7
-    JE SETE
-    CMP AL, 8
+    CMP AL, 37h
+    JE CETE
+    CMP AL, 38h
     JE OITO
-    CMP AL, 9
+    CMP AL, 39h
     JE NOVE
     UM: 
-        PUSH AX
-        MOV AX, 1  
-        POP AX
+        MOV BX, 0
         JMP PROXIMO
     DOIS: 
-        PUSH AX
-        MOV AX, 2  
-        POP AX
+        MOV BX, 9
         JMP PROXIMO
     TRES: 
-        PUSH AX
-        MOV AX, 3  
-        POP AX
+        MOV BX, 18
         JMP PROXIMO
     QUATRO: 
-        PUSH AX
-        MOV AX, 4  
-        POP AX
+        MOV BX, 27
         JMP PROXIMO
     CINCO: 
-        PUSH AX
-        MOV AX, 5  
-        POP AX
+        MOV BX, 36
         JMP PROXIMO
     SEIS: 
-        PUSH AX
-        MOV AX, 6  
-        POP AX
+        MOV BX, 45
         JMP PROXIMO
-    SETE: 
-        PUSH AX
-        MOV AX, 7  
-        POP AX
+    CETE: 
+        MOV BX, 54
         JMP PROXIMO
     OITO: 
-        PUSH AX
-        MOV AX, 8  
-        POP AX
+        MOV BX, 63
         JMP PROXIMO
     NOVE: 
-        PUSH AX
-        MOV AX, 9  
-        POP AX
+        MOV BX, 72
     PROXIMO:
     MOV AH, 02
     MOV DL, 'X'
     INT 21h
     MOV AH, 01
     INT 21h
-    AND AL, 0FH 
-    CMP AL, 'a'
+    CMP AL, 61h
     JE UM2
     CMP AL, 62h
     JE DOIS2
@@ -271,66 +253,39 @@ TITLE PROJETO 2 - SUDOKU
     CMP AL, 69h
     JE NOVE2
     UM2: 
-        PUSH CX
-        MOV CX, 1  
-        POP CX
+        MOV SI, 0
         JMP PROXIMO2
     DOIS2: 
-        PUSH CX
-        MOV CX, 2  
-        POP CX
+        MOV SI, 1
         JMP PROXIMO2
     TRES2: 
-        PUSH CX
-        MOV CX, 3  
-        POP CX
+        MOV SI, 2
         JMP PROXIMO2
     QUATRO2: 
-        PUSH CX
-        MOV CX, 4  
-        POP CX
+        MOV SI, 3
         JMP PROXIMO2
     CINCO2: 
-        PUSH CX
-        MOV CX, 5  
-        POP CX
+        MOV SI, 4 
         JMP PROXIMO2
     SEIS2: 
-        PUSH CX
-        MOV CX, 6  
-        POP CX
+        MOV SI, 5
         JMP PROXIMO2
     SETE2: 
-        PUSH CX
-        MOV CX, 7  
-        POP CX
+        MOV SI, 6
         JMP PROXIMO2
     OITO2: 
-        PUSH CX
-        MOV CX, 8  
-        POP CX
+        MOV SI, 7
         JMP PROXIMO2
     NOVE2: 
-        PUSH CX
-        MOV CX, 9  
-        POP CX
+        MOV SI, 8
     PROXIMO2:
-    PUSH AX
-    PUSH CX
-    PUSH DX
-    MUL CX
-    DEC DX
-    MOV BX, DX
-    POP AX
-    POP CX
-    POP DX
 
     PRINT digitenumero
 
     MOV AH, 01
     INT 21H
                     
-    MOV matriz1[BX], AL              ; passa o numero lido para a posicao [bx][si] da matriz
+    MOV matriz1[BX][SI], AL              ; passa o numero lido para a posicao [bx][si] da matriz
     RET
 
     leitura1 endp
