@@ -1,5 +1,6 @@
 TITLE PROJETO 2 - SUDOKU
 .model small
+.386                                    ; Add a .386 directive to your file to be able to use relative jump instructions with larger offsets introduced with the 80386.
 .data
     LINHA   EQU  9
     COLUNA  EQU  9
@@ -98,7 +99,6 @@ TITLE PROJETO 2 - SUDOKU
         MOV AX, @DATA;
         MOV DS, AX          ; inicia o segmento de dados
         paginaprincipal
-        CALL imprime_matriz 
         call leitura1
         call imprime_matriz  
 
@@ -181,7 +181,7 @@ TITLE PROJETO 2 - SUDOKU
    leitura1 proc
 
         VOLTA:
-
+        CALL imprime_matriz 
         PRINT digitecordenadas
         XOR BX,BX                               ; zera os registrador que serviram como referencia na leitura da matriz
         XOR SI, SI                              ;
@@ -304,11 +304,10 @@ TITLE PROJETO 2 - SUDOKU
         MOV AH, 01
         INT 21H
 
-        CONTINUA2:
         CMP AL, '0'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para nodigit
-        JNGE PROXIMO2
+        JNGE VOLTA
         CMP AL, '9'
-        JNLE PROXIMO2                          ;
+        JNLE VOLTA                          ;
                         
         MOV matriz1[BX][SI], AL                 ; passa o numero lido para a posicao [bx][si] da matriz
         RET
