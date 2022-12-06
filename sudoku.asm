@@ -179,115 +179,133 @@ TITLE PROJETO 2 - SUDOKU
     imprime_matriz endp
 
    leitura1 proc
-    PRINT digitecordenadas
-    XOR BX,BX                               ; zera os registrador que serviram como referencia na leitura da matriz
-    XOR SI, SI                              ;
-    MOV AH, 01
-    INT 21H
-    CMP AL, 31h
-    JE UM
-    CMP AL, 32h
-    JE DOIS
-    CMP AL, 33h
-    JE TRES
-    CMP AL, 34h
-    JE QUATRO
-    CMP AL, 35h
-    JE CINCO
-    CMP AL, 36h
-    JE SEIS
-    CMP AL, 37h
-    JE CETE
-    CMP AL, 38h
-    JE OITO
-    CMP AL, 39h
-    JE NOVE
-    UM: 
-        MOV BX, 0
-        JMP PROXIMO
-    DOIS: 
-        MOV BX, 9
-        JMP PROXIMO
-    TRES: 
-        MOV BX, 18
-        JMP PROXIMO
-    QUATRO: 
-        MOV BX, 27
-        JMP PROXIMO
-    CINCO: 
-        MOV BX, 36
-        JMP PROXIMO
-    SEIS: 
-        MOV BX, 45
-        JMP PROXIMO
-    CETE: 
-        MOV BX, 54
-        JMP PROXIMO
-    OITO: 
-        MOV BX, 63
-        JMP PROXIMO
-    NOVE: 
-        MOV BX, 72
-    PROXIMO:
-    MOV AH, 02
-    MOV DL, 'X'
-    INT 21h
-    MOV AH, 01
-    INT 21h
-    CMP AL, 61h
-    JE UM2
-    CMP AL, 62h
-    JE DOIS2
-    CMP AL, 63h
-    JE TRES2
-    CMP AL, 64h
-    JE QUATRO2
-    CMP AL, 65h
-    JE CINCO2
-    CMP AL, 66h
-    JE SEIS2
-    CMP AL, 67h
-    JE SETE2
-    CMP AL, 68h
-    JE OITO2
-    CMP AL, 69h
-    JE NOVE2
-    UM2: 
-        MOV SI, 0
-        JMP PROXIMO2
-    DOIS2: 
-        MOV SI, 1
-        JMP PROXIMO2
-    TRES2: 
-        MOV SI, 2
-        JMP PROXIMO2
-    QUATRO2: 
-        MOV SI, 3
-        JMP PROXIMO2
-    CINCO2: 
-        MOV SI, 4 
-        JMP PROXIMO2
-    SEIS2: 
-        MOV SI, 5
-        JMP PROXIMO2
-    SETE2: 
-        MOV SI, 6
-        JMP PROXIMO2
-    OITO2: 
-        MOV SI, 7
-        JMP PROXIMO2
-    NOVE2: 
-        MOV SI, 8
-    PROXIMO2:
 
-    PRINT digitenumero
+        VOLTA:
 
-    MOV AH, 01
-    INT 21H
-                    
-    MOV matriz1[BX][SI], AL              ; passa o numero lido para a posicao [bx][si] da matriz
-    RET
+        PRINT digitecordenadas
+        XOR BX,BX                               ; zera os registrador que serviram como referencia na leitura da matriz
+        XOR SI, SI                              ;
 
+        MOV AH, 01
+        INT 21H
+
+        CMP AL, '0'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para nodigit
+        JNGE VOLTA
+        CMP AL, '9'
+        JNLE VOLTA                              ;
+
+        CMP AL, 31h
+        JE UM
+        CMP AL, 32h
+        JE DOIS
+        CMP AL, 33h
+        JE TRES
+        CMP AL, 34h
+        JE QUATRO
+        CMP AL, 35h
+        JE CINCO
+        CMP AL, 36h
+        JE SEIS
+        CMP AL, 37h
+        JE CETE
+        CMP AL, 38h
+        JE OITO
+        CMP AL, 39h
+        JE NOVE
+
+        UM: 
+            MOV BX, 0
+            JMP PROXIMO
+        DOIS: 
+            MOV BX, 9
+            JMP PROXIMO
+        TRES: 
+            MOV BX, 18
+            JMP PROXIMO
+        QUATRO: 
+            MOV BX, 27
+            JMP PROXIMO
+        CINCO: 
+            MOV BX, 36
+            JMP PROXIMO
+        SEIS: 
+            MOV BX, 45
+            JMP PROXIMO
+        CETE: 
+            MOV BX, 54
+            JMP PROXIMO
+        OITO: 
+            MOV BX, 63
+            JMP PROXIMO
+        NOVE: 
+            MOV BX, 72
+
+        PROXIMO:
+        MOV AH, 02
+        MOV DL, 'X'
+        INT 21H
+
+        MOV AH, 01
+        INT 21H
+
+        CMP AL, 'a'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para nodigit
+        JNGE VOLTA
+        CMP AL, 'i'
+        JNLE VOLTA                              ;
+
+        CMP AL, 61h
+        JE UM2
+        CMP AL, 62h
+        JE DOIS2
+        CMP AL, 63h
+        JE TRES2
+        CMP AL, 64h
+        JE QUATRO2
+        CMP AL, 65h
+        JE CINCO2
+        CMP AL, 66h
+        JE SEIS2
+        CMP AL, 67h
+        JE SETE2
+        CMP AL, 68h
+        JE OITO2
+        CMP AL, 69h
+        JE NOVE2
+        UM2: 
+            MOV SI, 0
+            JMP PROXIMO2
+        DOIS2: 
+            MOV SI, 1
+            JMP PROXIMO2
+        TRES2: 
+            MOV SI, 2
+            JMP PROXIMO2
+        QUATRO2: 
+            MOV SI, 3
+            JMP PROXIMO2
+        CINCO2: 
+            MOV SI, 4 
+            JMP PROXIMO2
+        SEIS2: 
+            MOV SI, 5
+            JMP PROXIMO2
+        SETE2: 
+            MOV SI, 6
+            JMP PROXIMO2
+        OITO2: 
+            MOV SI, 7
+            JMP PROXIMO2
+        NOVE2: 
+            MOV SI, 8
+
+        PROXIMO2:
+        PRINT digitenumero
+
+        MOV AH, 01
+        INT 21H
+                        
+        MOV matriz1[BX][SI], AL              ; passa o numero lido para a posicao [bx][si] da matriz
+        RET
     leitura1 endp
 
     ;    leitura1 proc
