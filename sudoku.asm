@@ -191,7 +191,7 @@ TITLE PROJETO 2 - SUDOKU
         JMP OUT4
     imprime_matriz endp
 
-   leitura1 proc
+    leitura1 proc
 
         VOLTA:
         CALL imprime_matriz
@@ -343,22 +343,26 @@ TITLE PROJETO 2 - SUDOKU
 
         CONTINUAR:                            
         MOV matriz1[BX][SI], AL                 ; passa o numero lido para a posicao [bx][si] da matriz
+
         RET
     leitura1 endp
 
     verifica_valor proc
 
-        CMP matriz1[BX][SI], ?
+        CMP matriz1[BX][SI], ?                  ; compara o elemento que o usuario quer editar com '?', se não for igual, 
+                                                ; quer dizer que o usuario deseja alterar um valor que ja existe na matriz, 
+                                                ; o que é proibido, logo, exibi-se uma mensagem de erro e renicia o processo 
+                                                ; sem alterar nenhum valor na matriz
         JNE NAO
-        RET
+        RET                                     ; se for igual a '?', quer dizer que é possivel inserir um valor na matriz, 
+                                                ; então retorna para continuar o fluxo do programa normalmente
         NAO:
-        PRINT erro
-        MOV DI, 1
-        MOV AH, 01
+        PRINT erro                              
+        MOV DI, 1                               ; contador que vai servir no procedimento de leitura para voltar para o processo desde o inicio
+        MOV AH, 01                              ; enter 
         INT 21H
         RET
+
     verifica_valor endp
-
-
 
 END MAIN
