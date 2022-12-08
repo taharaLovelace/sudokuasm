@@ -4,15 +4,15 @@ TITLE PROJETO 2 - SUDOKU
 .data
     LINHA   EQU  9
     COLUNA  EQU  9
-    matriz1 db  ?,?,5,?,?,?,8,?,?
-            db  8,1,6,?,?,5,4,2,7
-            db  7,?,2,6,?,?,?,1,9
-            db  2,?,?,?,?,7,3,?,1
-            db  6,9,?,1,?,8,7,?,?
-            db  3,7,1,5,?,?,?,4,?
-            db  ?,6,?,9,?,2,?,?,?
-            db  1,?,3,?,4,?,9,7,?
-            db  5,8,?,7,?,?,2,6,4
+    matriz1         db  ?,?,5,?,?,?,8,?,?
+                    db  8,1,6,?,?,5,4,2,7
+                    db  7,?,2,6,?,?,?,1,9
+                    db  2,?,?,?,?,7,3,?,1
+                    db  6,9,?,1,?,8,7,?,?
+                    db  3,7,1,5,?,?,?,4,?
+                    db  ?,6,?,9,?,2,?,?,?
+                    db  1,?,3,?,4,?,9,7,?
+                    db  5,8,?,7,?,?,2,6,4
 
     matriz1completa db  9,4,5,2,7,1,8,3,6
                     db  8,1,6,3,9,5,4,2,7
@@ -30,13 +30,17 @@ TITLE PROJETO 2 - SUDOKU
     TERCEIRALINHA DB 10,13,200,2 DUP(11 DUP (205),202),11 DUP (205),188,'$'
     sudoku db "            BEM VINDO AO SUDOKU", 10, '$'
     aperte db 10, "     Aperte enter para iniciar o jogo$"
-    cordenadasAI db "  A   B   C   D   E   F   G   H   I   $"
+    cordenadasAI db "  a   b   c   d   e   f   g   h   i   $"
     cordenadas19 db "123456789"
     digitecordenadas db 10, " Digite a coordenada que deseje atribuir um valor: $"
     digitenumero db 10, " Digite um numero:  $"
     valorinvalido db 10, " Valor invalido! Aperte enter para continuar!$"
     erro db 10, " Nao eh possivel alterar essa posicao! Aperte enter para continuar!$"
-    verificador db '?'
+    valorerrado db 10, " Valor digitado nao eh o correto! Aperte enter para continuar!$"
+    parabens db "    PARABENS POR COMPLETAR O SUDOKU$"
+    apertefim db 10, "   Aperte enter para encerrar o jogo$"
+
+    var db 39
     
 .code
     paginaprincipal macro
@@ -69,6 +73,24 @@ TITLE PROJETO 2 - SUDOKU
         MOV DX, 184FH   
         MOV BH, 5H    
         INT 10H
+    endm
+
+    paginafinal macro
+        MOV AH, 00                   ; tipo de video
+        MOV AL, 00                   ; tipo de texto 40x25
+        INT 10H                      ; executa a entrada de video
+
+    ; formata o modo de video
+        MOV AH, 09                   ; escrever um caractere e atributo para a posicao do cursos
+        MOV AL, 20H                  ; o caractere a mostrar
+        MOV BH, 00                   ; numero da pagina
+        MOV BL, 8FH                  ; atribuicao de cor
+        MOV CX, 800H                 ; numero de vezes a escrever o caractere
+        INT 10H                      ; executa a entrada de video
+        PRINT parabens
+        PRINT apertefim
+        MOV AH, 01
+        INT 21H
     endm
 
     PRINT macro msg
@@ -112,10 +134,14 @@ TITLE PROJETO 2 - SUDOKU
         MOV AX, @DATA;
         MOV DS, AX          ; inicia o segmento de dados
         paginaprincipal
+        VAMOS:
         call leitura1
-        call imprime_matriz  
+        call imprime_matriz
+        CMP VAR, 0
+        JNZ VAMOS
 
     FIM:
+        paginafinal
         MOV AH,4CH
         INT 21h
     main endp
@@ -317,7 +343,7 @@ TITLE PROJETO 2 - SUDOKU
             MOV SI, 8
 
         PROXIMO2:                               ; caso as coordenada sejam validas, printar a mensagem de para o usuário digitar um numero
-        call verifica_valor
+        CALL verifica_possibilidade
         CMP DI, 1
         JE VOLTA
         PRINT digitenumero
@@ -341,13 +367,17 @@ TITLE PROJETO 2 - SUDOKU
         INT 21H
         JMP VOLTA
 
-        CONTINUAR:                            
+        CONTINUAR:
+        AND AL, 0FH
+        CALL verifica_valor
+        CMP DI, 1
+        JE VOLTA                            
         MOV matriz1[BX][SI], AL                 ; passa o numero lido para a posicao [bx][si] da matriz
 
         RET
     leitura1 endp
 
-    verifica_valor proc
+    verifica_possibilidade proc
 
         CMP matriz1[BX][SI], ?                  ; compara o elemento que o usuario quer editar com '?', se não for igual, 
                                                 ; quer dizer que o usuario deseja alterar um valor que ja existe na matriz, 
@@ -358,6 +388,21 @@ TITLE PROJETO 2 - SUDOKU
                                                 ; então retorna para continuar o fluxo do programa normalmente
         NAO:
         PRINT erro                              
+        MOV DI, 1                               ; contador que vai servir no procedimento de leitura para voltar para o processo desde o inicio
+        MOV AH, 01                              ; enter 
+        INT 21H
+        RET
+
+    verifica_possibilidade endp
+
+    verifica_valor proc
+
+        CMP matriz1completa[BX][SI], AL
+        JNE ERRADO
+        DEC var
+        RET
+        ERRADO:
+        PRINT valorerrado
         MOV DI, 1                               ; contador que vai servir no procedimento de leitura para voltar para o processo desde o inicio
         MOV AH, 01                              ; enter 
         INT 21H
