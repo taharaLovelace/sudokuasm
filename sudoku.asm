@@ -194,20 +194,21 @@ TITLE PROJETO 2 - SUDOKU
         VOLTA:
         CALL imprime_matriz 
         PRINT digitecordenadas
+
         XOR BX,BX                               ; zera os registrador que serviram como referencia na leitura da matriz
         XOR SI, SI                              ;
 
-        MOV AH, 01
+        MOV AH, 01                              ; le a linha coordenada da linha
         INT 21H
 
-        CMP AL, '0'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para nodigit
-        JNGE VOLTA
+        CMP AL, '0'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para volta
+        JNGE VOLTA  
         CMP AL, '9'
-        JNLE VOLTA                              ;
+        JNLE VOLTA                              
 
-        CMP AL, 31h
-        JE UM
-        CMP AL, 32h
+        CMP AL, 31h                             ; serie de ifs para verificar qual linha o usuario deseja inserir um valor
+        JE UM                                   
+        CMP AL, 32h                             
         JE DOIS
         CMP AL, 33h
         JE TRES
@@ -223,8 +224,9 @@ TITLE PROJETO 2 - SUDOKU
         JE OITO
         CMP AL, 39h
         JE NOVE
-
-        UM: 
+                                                ; condicoes especificadas para cada linha
+                                                ; bx é o registrador referencia de linha, então de uma linha para outra, existe uma mudança de 9 em relação ao bx
+        UM:                                     
             MOV BX, 0
             JMP PROXIMO
         DOIS: 
@@ -251,20 +253,20 @@ TITLE PROJETO 2 - SUDOKU
         NOVE: 
             MOV BX, 72
 
-        PROXIMO:
+        PROXIMO:                                ; printar um 'X', para questão visual para o usuário
         MOV AH, 02
         MOV DL, 'X'
         INT 21H
 
-        MOV AH, 01
+        MOV AH, 01                              ; le a linha coordenada da coluna
         INT 21H
 
-        CMP AL, 'a'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para nodigit
+        CMP AL, 'a'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para volta
         JNGE VOLTA
         CMP AL, 'i'
-        JNLE VOLTA                              ;
+        JNLE VOLTA                              
 
-        CMP AL, 61h
+        CMP AL, 61h                             ; serie de ifs para verificar qual coluna o usuario deseja inserir um valor
         JE UM2
         CMP AL, 62h
         JE DOIS2
@@ -282,6 +284,8 @@ TITLE PROJETO 2 - SUDOKU
         JE OITO2
         CMP AL, 69h
         JE NOVE2
+                                                ; condicoes especificadas para cada coluna
+                                                ; si é o registrador referencia de coluna, então de uma coluna para outra, existe um incremento em relação ao si de 1
         UM2: 
             MOV SI, 0
             JMP PROXIMO2
@@ -309,28 +313,33 @@ TITLE PROJETO 2 - SUDOKU
         NOVE2: 
             MOV SI, 8
 
-        PROXIMO2:
+        PROXIMO2:                               ; caso as coordenada sejam validas, printar a mensagem de para o usuário digitar um numero
         PRINT digitenumero
 
-        MOV AH, 01
+        MOV AH, 01                              ; entrada do numero de 1 a 9
         INT 21H
 
-        CMP AL, '1'                             ; verifica se o caracter digitado pelo usuario esta entre 1 e 9, se não estiver pula para nodigit
+        CMP AL, '1'                             ; verifica se o caracter digitado pelo usuario esta entre 1 e 9, se não estiver pula para errou
         JNGE ERROU
         CMP AL, '9'
         JNLE ERROU
 
-        JMP CONTINUAR                           ;
+        JMP CONTINUAR                           ; caso o numero seja de 1 a 9, pula para continuar
 
-        ERROU:
+                                                ; caso chegue a essa parte, quer dizer que o valor que o usuario digitou
+                                                ; um numero invalido, então imprime uma mensagem apresentando o erro, e pula para VOLTA,
+                                                ; ser alterar nada na matriz.
+        ERROU:                                  
         PRINT valorinvalido
         MOV AH, 01
         INT 21H
         JMP VOLTA
 
-        CONTINUAR:            
+        CONTINUAR:                              
         MOV matriz1[BX][SI], AL                 ; passa o numero lido para a posicao [bx][si] da matriz
         RET
     leitura1 endp
+
+
 
 END MAIN
