@@ -44,6 +44,26 @@ TITLE PROJETO 2 - SUDOKU
                         db  1,2,3,8,4,6,9,7,5
                         db  5,8,9,7,1,3,2,6,4 
 
+    matrizdificil       db  8,?,?,?,1,?,?,?,2
+                        db  ?,?,?,8,?,7,?,?,?
+                        db  ?,?,9,?,?,?,4,?,?
+                        db  ?,8,?,6,?,4,?,5,?
+                        db  4,?,?,?,?,?,?,?,7
+                        db  ?,9,?,7,?,5,?,3,?
+                        db  ?,?,3,?,?,?,6,?,?
+                        db  ?,?,?,9,?,3,?,?,?
+                        db  9,?,?,?,2,?,?,?,1
+
+    matrizdificilcomp   db  8,6,4,3,1,9,5,7,2
+                        db  3,5,2,8,4,7,9,1,6
+                        db  7,1,9,2,5,6,4,8,3
+                        db  2,8,7,6,3,4,1,5,9
+                        db  4,3,5,1,9,2,8,6,7
+                        db  6,9,1,7,8,5,2,3,4
+                        db  5,2,3,4,7,1,6,9,8
+                        db  1,4,8,9,6,3,7,2,5
+                        db  9,7,6,5,2,8,3,4,1
+
     MOLDURA DB 201,2 DUP(11 DUP (205),203),11 DUP (205),187,'$'
     PRIMEIRALINHA DB 10,13,3 DUP(186,32,2 DUP (196),197, 3 DUP (196), 197, 2 DUP (196),32),186, '$'
     SEGUNDALINHA DB 10,13,204,2 DUP(11 DUP (205),206),11 DUP (205),185,'$'
@@ -67,6 +87,7 @@ TITLE PROJETO 2 - SUDOKU
 
     varfacil db 29
     varmedio db 39
+    vardificil db 57
     
 .code
 
@@ -180,7 +201,8 @@ TITLE PROJETO 2 - SUDOKU
         JNLE voltadificuldade
     endm 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        
+
+;MACRO DA MATRIZ FACIL      
 ; macro que verifica se a coordenada digitada pelo usuario é valida para alterar
     verifica_possibilidadeFacil macro matriz
 
@@ -286,6 +308,8 @@ TITLE PROJETO 2 - SUDOKU
         FIMIMPRIMEFACIL:
     endm
 
+
+;MACRO DA MATRIZ MEDIA
 ; macro que verifica se a coordenada digitada pelo usuario é valida para alterar
     verifica_possibilidadeMedio macro matriz
 
@@ -390,6 +414,112 @@ TITLE PROJETO 2 - SUDOKU
         JMP OUT4MEDIO
         FIMIMPRIMEMEDIO:
     endm
+
+;MACRO DA MATRIZ DIFICIL
+    ; macro que verifica se a coordenada digitada pelo usuario é valida para alterar
+    verifica_possibilidadeDificil macro matriz
+
+        CMP matriz[BX][SI], ?                   ; compara o elemento que o usuario quer editar com '?', se não for igual, 
+                                                ; quer dizer que o usuario deseja alterar um valor que ja existe na matriz, 
+                                                ; o que é proibido, logo, exibi-se uma mensagem de erro e renicia o processo 
+                                                ; sem alterar nenhum valor na matriz
+        JNE NAODIFICIL
+        JMP FIMPOSSIBILIDADEDIFICIL             ; se for igual a '?', quer dizer que é possivel inserir um valor na matriz, 
+                                                ; então retorna para continuar o fluxo do programa normalmente
+        NAODIFICIL:
+        PRINT erro                              
+        MOV DI, 1                               ; contador que vai servir no procedimento de leitura para voltar para o processo desde o inicio
+        MOV AH, 01                              ; enter 
+        INT 21H
+        FIMPOSSIBILIDADEDIFICIL:
+    endm
+
+; macro que verifica se o valor digitado pelo usuário é o correto
+    verifica_valorDificil macro matriz                  
+
+        CMP matriz[BX][SI], AL                  ; compara o elemento que o usuario digitou com o elemento na mesma posicao na matriz correta
+        JNE ERRADOVERIFICADIFICIL                            
+        DEC vardificil                                 ; caso for o numero esperado, decrementa o contador que vai indicar o fim do programa  
+        JMP FIMVERIFICAVALORDIFICIL
+        ERRADOVERIFICADIFICIL:
+        PRINT valorerrado
+        MOV DI, 1                               ; contador que vai servir no procedimento de leitura para voltar para o processo desde o inicio
+        MOV AH, 01                              ; enter 
+        INT 21H
+        FIMVERIFICAVALORDIFICIL:
+    endm
+
+; macro que imprime a matriz no quesito geral, com bordas, etc
+    imprime_matrizdificil macro matriz         
+
+        paginasecundaria
+        PRINT cordenadasAI
+        pulalinha
+        XOR DI, DI
+        XOR BX,BX
+        XOR SI,SI
+        PRINT MOLDURA
+        MOV CX,3
+        PUSH CX
+        OUT4DIFICIL:
+        XOR CL,CL
+        ADD CH,3
+        ADD CL,3
+        pulalinha
+        BARRADUPLA
+        JMP OUT3DIFICIL
+        OUT1DIFICIL:
+            ADD CL, 3
+            ADD BX, COLUNA
+            XOR SI,SI
+            PRINT PRIMEIRALINHA
+            pulalinha
+            BARRADUPLA
+            JMP OUT3DIFICIL
+            OUT2DIFICIL:
+                pulalinha
+                OUT3DIFICIL:
+                    SPACE
+                    PRINTMATRIZ matriz
+                    SPACE
+                    BARRASIMPLES matriz
+                    SPACE
+                    PRINTMATRIZ matriz
+                    SPACE
+                    BARRASIMPLES
+                    SPACE
+                    PRINTMATRIZ matriz
+                    SPACE
+                    BARRADUPLA
+            DEC CL
+            JNZ OUT3DIFICIL   
+        MOV AH, 02
+        SPACE
+        MOV DL, cordenadas19[DI]
+        INC DI 
+        INT 21H      
+        DEC CH
+        JNZ OUT1DIFICIL
+        ADD BX, COLUNA
+        XOR SI,SI
+        POP CX
+        CMP CX, 1
+        JNE OUT5DIFICIL
+        PRINT TERCEIRALINHA
+        JMP OUT6DIFICIL
+        OUT5DIFICIL: 
+        PRINT SEGUNDALINHA
+        OUT6DIFICIL:
+        DEC CX
+        PUSH CX
+        JNZ RESTARTDIFICIL
+        POP CX
+
+        JMP FIMIMPRIMEDIFICIL
+        RESTARTDIFICIL:
+        JMP OUT4DIFICIL
+        FIMIMPRIMEDIFICIL:
+    endm
         
 ; procedimento main, que controla o fluxo do programa
     main proc
@@ -403,7 +533,7 @@ TITLE PROJETO 2 - SUDOKU
         JE FACIL
         CMP AL, '2'
         JE MEDIO
-        CMP AL, '1'
+        CMP AL, '3'
         JE DIFICIL
 
         FACIL:
@@ -419,8 +549,8 @@ TITLE PROJETO 2 - SUDOKU
         JMP FIM
 
         DIFICIL:
-        call leituraMatrizMedia
-        CMP varmedio, 0
+        call leituraMatrizDificil
+        CMP vardificil, 0
         JNZ DIFICIL
 
     FIM:
@@ -751,5 +881,169 @@ TITLE PROJETO 2 - SUDOKU
 
         RET
     leituraMatrizMedia endp
+
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; procedimento de leitura matriz media
+    leituraMatrizDificil proc
+
+        VOLTADIFICIL:
+        imprime_matrizdificil matrizdificil
+        XOR DI, DI 
+        PRINT digitecordenadas
+
+        XOR BX,BX                               ; zera os registrador que serviram como referencia na leitura da matriz
+        XOR SI, SI                              ;
+
+        MOV AH, 01                              ; le a linha coordenada da linha
+        INT 21H
+
+        CMP AL, '0'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para volta
+        JNGE VOLTADIFICIL  
+        CMP AL, '9'
+        JNLE VOLTADIFICIL                              
+
+        CMP AL, 31h                             ; serie de ifs para verificar qual linha o usuario deseja inserir um valor
+        JE UMDIFICIL                                   
+        CMP AL, 32h                             
+        JE DOISDIFICIL
+        CMP AL, 33h
+        JE TRESDIFICIL
+        CMP AL, 34h
+        JE QUATRODIFICIL
+        CMP AL, 35h
+        JE CINCODIFICIL
+        CMP AL, 36h
+        JE SEISDIFICIL
+        CMP AL, 37h
+        JE CETEDIFICIL
+        CMP AL, 38h
+        JE OITODIFICIL
+        CMP AL, 39h
+        JE NOVEDIFICIL
+                                                ; condicoes especificadas para cada linha
+                                                ; bx é o registrador referencia de linha, então de uma linha para outra, existe uma mudança de 9 em relação ao bx
+        UMDIFICIL:                                     
+            MOV BX, 0
+            JMP PROXIMODIFICIL
+        DOISDIFICIL: 
+            MOV BX, 9
+            JMP PROXIMODIFICIL
+        TRESDIFICIL: 
+            MOV BX, 18
+            JMP PROXIMODIFICIL
+        QUATRODIFICIL: 
+            MOV BX, 27
+            JMP PROXIMODIFICIL
+        CINCODIFICIL: 
+            MOV BX, 36
+            JMP PROXIMODIFICIL
+        SEISDIFICIL: 
+            MOV BX, 45
+            JMP PROXIMODIFICIL
+        CETEDIFICIL: 
+            MOV BX, 54
+            JMP PROXIMODIFICIL
+        OITODIFICIL: 
+            MOV BX, 63
+            JMP PROXIMODIFICIL
+        NOVEDIFICIL: 
+            MOV BX, 72
+
+        PROXIMODIFICIL:                                ; printar um 'X', para questão visual para o usuário
+        MOV AH, 02
+        MOV DL, 'X'
+        INT 21H
+
+        MOV AH, 01                              ; le a linha coordenada da coluna
+        INT 21H
+
+        CMP AL, 'a'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para volta
+        JNGE VOLTADIFICIL
+        CMP AL, 'i'
+        JNLE VOLTADIFICIL                              
+
+        CMP AL, 61h                             ; serie de ifs para verificar qual coluna o usuario deseja inserir um valor
+        JE UM2DIFICIL
+        CMP AL, 62h
+        JE DOIS2DIFICIL
+        CMP AL, 63h
+        JE TRES2DIFICIL
+        CMP AL, 64h
+        JE QUATRO2DIFICIL
+        CMP AL, 65h
+        JE CINCO2DIFICIL
+        CMP AL, 66h
+        JE SEIS2DIFICIL
+        CMP AL, 67h
+        JE SETE2DIFICIL
+        CMP AL, 68h
+        JE OITO2DIFICIL
+        CMP AL, 69h
+        JE NOVE2DIFICIL
+                                                ; condicoes especificadas para cada coluna
+                                                ; si é o registrador referencia de coluna, então de uma coluna para outra, existe um incremento em relação ao si de 1
+        UM2DIFICIL: 
+            MOV SI, 0
+            JMP PROXIMO2DIFICIL
+        DOIS2DIFICIL: 
+            MOV SI, 1
+            JMP PROXIMO2DIFICIL
+        TRES2DIFICIL: 
+            MOV SI, 2
+            JMP PROXIMO2DIFICIL
+        QUATRO2DIFICIL: 
+            MOV SI, 3
+            JMP PROXIMO2DIFICIL
+        CINCO2DIFICIL: 
+            MOV SI, 4 
+            JMP PROXIMO2DIFICIL
+        SEIS2DIFICIL: 
+            MOV SI, 5
+            JMP PROXIMO2DIFICIL
+        SETE2DIFICIL: 
+            MOV SI, 6
+            JMP PROXIMO2DIFICIL
+        OITO2DIFICIL: 
+            MOV SI, 7
+            JMP PROXIMO2DIFICIL
+        NOVE2DIFICIL: 
+            MOV SI, 8
+
+        PROXIMO2DIFICIL:                               ; caso as coordenada sejam validas, printar a mensagem de para o usuário digitar um numero
+        verifica_possibilidadeDificil matrizdificil
+        CMP DI, 1
+        JE VOLTADIFICIL
+        PRINT digitenumero
+
+        MOV AH, 01                              ; entrada do numero de 1 a 9
+        INT 21H
+
+        CMP AL, '1'                             ; verifica se o caracter digitado pelo usuario esta entre 1 e 9, se não estiver pula para errou
+        JNGE ERROUDIFICIL
+        CMP AL, '9'
+        JNLE ERROUDIFICIL
+
+        JMP CONTINUARDIFICIL                           ; caso o numero seja de 1 a 9, pula para continuar
+
+                                                ; caso chegue a essa parte, quer dizer que o valor que o usuario digitou
+                                                ; um numero invalido, então imprime uma mensagem apresentando o erro, e pula para VOLTAMEDIA,
+                                                ; ser alterar nada na matriz.
+        ERROUDIFICIL:                                  
+        PRINT valorinvalido
+        MOV AH, 01
+        INT 21H
+        JMP VOLTADIFICIL
+
+        CONTINUARDIFICIL:
+        AND AL, 0FH
+        verifica_valorDificil matrizdificilcomp
+        CMP DI, 1
+        JE VOLTADIFICIL                            
+        MOV matrizdificil[BX][SI], AL                 ; passa o numero lido para a posicao [bx][si] da matriz
+
+        RET
+    leituraMatrizDificil endp
+
 
 END MAIN
