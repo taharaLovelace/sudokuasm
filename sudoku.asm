@@ -1,6 +1,6 @@
 TITLE PROJETO 2 - SUDOKU
 .model small
-.386                                        ; Add a .386 directive to your file to be able to use relative jump instructions with larger offsets introduced with the 80386.
+.386                                       ; Add a .386 directive to your file to be able to use relative jump instructions with larger offsets introduced with the 80386.
 .data
     LINHA   EQU  9
     COLUNA  EQU  9
