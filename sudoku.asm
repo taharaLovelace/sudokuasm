@@ -4,15 +4,25 @@ TITLE PROJETO 2 - SUDOKU
 .data
     LINHA   EQU  9
     COLUNA  EQU  9
-    matriz1 db  4,?,?,3,?,8,?,?,6
-            db  2,3,?,?,6,?,4,?,?
-            db  ?,?,9,4,?,?,7,?,?
-            db  8,9,?,7,?,?,?,?,?
-            db  5,?,?,?,5,?,9,1,?
-            db  ?,6,?,?,?,?,?,?,7
-            db  ?,?,8,?,1,?,?,4,3
-            db  ?,4,1,?,?,?,?,6,?
-            db  ?,?,?,8,?,2,?,7,9
+    matriz1 db  ?,?,5,?,?,?,8,?,?
+            db  8,1,6,?,?,5,4,2,7
+            db  7,?,2,6,?,?,?,1,9
+            db  2,?,?,?,?,7,3,?,1
+            db  6,9,?,1,?,8,7,?,?
+            db  3,7,1,5,?,?,?,4,?
+            db  ?,6,?,9,?,2,?,?,?
+            db  1,?,3,?,4,?,9,7,?
+            db  5,8,?,7,?,?,2,6,4
+
+    matriz1completa db  9,4,5,2,7,1,8,3,6
+                    db  8,1,6,3,9,5,4,2,7
+                    db  7,3,2,6,8,4,5,1,9
+                    db  2,5,8,4,6,7,3,9,1
+                    db  6,9,4,1,3,8,7,5,2
+                    db  3,7,1,5,2,9,6,4,8
+                    db  4,6,7,9,5,2,1,8,3
+                    db  1,2,3,8,4,6,9,7,5
+                    db  5,8,9,7,1,3,2,6,4 
 
     MOLDURA DB 201,2 DUP(11 DUP (205),203),11 DUP (205),187,'$'
     PRIMEIRALINHA DB 10,13,3 DUP(186,32,2 DUP (196),197, 3 DUP (196), 197, 2 DUP (196),32),186, '$'
@@ -22,8 +32,9 @@ TITLE PROJETO 2 - SUDOKU
     aperte db 10, "     Aperte enter para iniciar o jogo$"
     cordenadasAI db "  A   B   C   D   E   F   G   H   I   $"
     cordenadas19 db "123456789"
-    digitecordenadas db 10, "Digite a coordenada que deseje atribuir um valor: $"
-    digitenumero db 10, "Digite um numero:  $"
+    digitecordenadas db 10, " Digite a coordenada que deseje atribuir um valor: $"
+    digitenumero db 10, " Digite um numero:  $"
+    valorinvalido db 10, " Valor invalido! Aperte enter para continuar!$"
     
 .code
     paginaprincipal macro
@@ -304,29 +315,22 @@ TITLE PROJETO 2 - SUDOKU
         MOV AH, 01
         INT 21H
 
-        CMP AL, '0'                             ; verifica se o caracter digitado pelo usuario esta entre 0 e 9, se não estiver pula para nodigit
-        JNGE VOLTA
+        CMP AL, '1'                             ; verifica se o caracter digitado pelo usuario esta entre 1 e 9, se não estiver pula para nodigit
+        JNGE ERROU
         CMP AL, '9'
-        JNLE VOLTA                          ;
-                        
+        JNLE ERROU
+
+        JMP CONTINUAR                           ;
+
+        ERROU:
+        PRINT valorinvalido
+        MOV AH, 01
+        INT 21H
+        JMP VOLTA
+
+        CONTINUAR:            
         MOV matriz1[BX][SI], AL                 ; passa o numero lido para a posicao [bx][si] da matriz
         RET
     leitura1 endp
 
-    ;    leitura1 proc
-    ;PRINT digitecordenadas
-    ;
-    ;XOR BX,BX                                  ; zera os registrador que serviram como referencia na leitura da matriz
-    ;XOR SI, SI                                 ;
-
-
-    ;MOV BX , 80
-    ;MOV SI, 1
-
-    ;MOV AH, 01
-    ;INT 21H                 
-    ;MOV matriz1[BX], AL                        ; passa o numero lido para a posicao [bx][si] da matriz
-    ;RET
-
-    ;leitura1 endp
 END MAIN
