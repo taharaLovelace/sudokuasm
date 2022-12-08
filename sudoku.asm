@@ -35,6 +35,8 @@ TITLE PROJETO 2 - SUDOKU
     digitecordenadas db 10, " Digite a coordenada que deseje atribuir um valor: $"
     digitenumero db 10, " Digite um numero:  $"
     valorinvalido db 10, " Valor invalido! Aperte enter para continuar!$"
+    erro db 10, " Nao eh possivel alterar essa posicao! Aperte enter para continuar!$"
+    verificador db '?'
     
 .code
     paginaprincipal macro
@@ -192,7 +194,8 @@ TITLE PROJETO 2 - SUDOKU
    leitura1 proc
 
         VOLTA:
-        CALL imprime_matriz 
+        CALL imprime_matriz
+        XOR DI, DI 
         PRINT digitecordenadas
 
         XOR BX,BX                               ; zera os registrador que serviram como referencia na leitura da matriz
@@ -314,6 +317,9 @@ TITLE PROJETO 2 - SUDOKU
             MOV SI, 8
 
         PROXIMO2:                               ; caso as coordenada sejam validas, printar a mensagem de para o usuário digitar um numero
+        call verifica_valor
+        CMP DI, 1
+        JE VOLTA
         PRINT digitenumero
 
         MOV AH, 01                              ; entrada do numero de 1 a 9
@@ -335,10 +341,23 @@ TITLE PROJETO 2 - SUDOKU
         INT 21H
         JMP VOLTA
 
-        CONTINUAR:                              
+        CONTINUAR:                            
         MOV matriz1[BX][SI], AL                 ; passa o numero lido para a posicao [bx][si] da matriz
         RET
     leitura1 endp
+
+    verifica_valor proc
+
+        CMP matriz1[BX][SI], ?
+        JNE NAO
+        RET
+        NAO:
+        PRINT erro
+        MOV DI, 1
+        MOV AH, 01
+        INT 21H
+        RET
+    verifica_valor endp
 
 
 
