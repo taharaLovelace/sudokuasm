@@ -1,10 +1,10 @@
 TITLE PROJETO 2 - SUDOKU
 .model small
-.386                                       ; Add a .386 directive to your file to be able to use relative jump instructions with larger offsets introduced with the 80386.
+.386                           ; Add a .386 directive to your file to be able to use relative jump instructions with larger offsets introduced with the 80386.
 .data
     LINHA   EQU  9
     COLUNA  EQU  9
-    matrizfacil         db  9,7,?,?,?,6,4,5,2
+    matrizfacil         db  9,7,?,?,?,6,4,5,2               ; matrizfacil incompleta
                         db  6,?,5,7,4,?,8,3,?
                         db  4,8,2,3,?,?,?,1,?
                         db  5,2,?,6,7,9,?,?,3
@@ -14,7 +14,7 @@ TITLE PROJETO 2 - SUDOKU
                         db  ?,5,4,?,2,1,7,?,8
                         db  2,6,7,4,?,?,?,9,1
 
-    matrizfacilcompleta db  9,7,3,8,1,6,4,5,2
+    matrizfacilcompleta db  9,7,3,8,1,6,4,5,2               ; matrizfacil completa
                         db  6,1,5,7,4,2,8,3,9
                         db  4,8,2,3,9,5,6,1,7
                         db  5,2,8,6,7,9,1,4,3
@@ -24,7 +24,7 @@ TITLE PROJETO 2 - SUDOKU
                         db  3,5,4,9,2,1,7,6,8
                         db  2,6,7,4,3,8,5,9,1 
 
-    matrizmedia         db  ?,?,5,?,?,?,8,?,?
+    matrizmedia         db  ?,?,5,?,?,?,8,?,?               ; matrizmedia incompleta
                         db  8,1,6,?,?,5,4,2,7
                         db  7,?,2,6,?,?,?,1,9
                         db  2,?,?,?,?,7,3,?,1
@@ -34,7 +34,7 @@ TITLE PROJETO 2 - SUDOKU
                         db  1,?,3,?,4,?,9,7,?
                         db  5,8,?,7,?,?,2,6,4
 
-    matrizmediacompleta db  9,4,5,2,7,1,8,3,6
+    matrizmediacompleta db  9,4,5,2,7,1,8,3,6               ; matrizmedia completa
                         db  8,1,6,3,9,5,4,2,7
                         db  7,3,2,6,8,4,5,1,9
                         db  2,5,8,4,6,7,3,9,1
@@ -44,7 +44,7 @@ TITLE PROJETO 2 - SUDOKU
                         db  1,2,3,8,4,6,9,7,5
                         db  5,8,9,7,1,3,2,6,4 
 
-    matrizdificil       db  8,?,?,?,1,?,?,?,2
+    matrizdificil       db  8,?,?,?,1,?,?,?,2               ; matrizdificil incompleta
                         db  ?,?,?,8,?,7,?,?,?
                         db  ?,?,9,?,?,?,4,?,?
                         db  ?,8,?,6,?,4,?,5,?
@@ -54,7 +54,7 @@ TITLE PROJETO 2 - SUDOKU
                         db  ?,?,?,9,?,3,?,?,?
                         db  9,?,?,?,2,?,?,?,1
 
-    matrizdificilcomp   db  8,6,4,3,1,9,5,7,2
+    matrizdificilcomp   db  8,6,4,3,1,9,5,7,2               ; matrizdificil completa
                         db  3,5,2,8,4,7,9,1,6
                         db  7,1,9,2,5,6,4,8,3
                         db  2,8,7,6,3,4,1,5,9
@@ -106,14 +106,14 @@ TITLE PROJETO 2 - SUDOKU
         INT 10H                      ; executa a entrada de video
         PRINT sudoku
         PRINT aperte
-        MOV AH, 01
+        MOV AH, 01                   ; enter
         INT 21H
     endm
 
 ; macro que altera a aparencia da segunda tela do programa
     paginasecundaria macro
 
-        MOV AH, 00       
+        MOV AH, 00                      ; limpa tela
         MOV AL, 03h      
         INT 10H          
 
@@ -139,7 +139,7 @@ TITLE PROJETO 2 - SUDOKU
         INT 10H                      ; executa a entrada de video
         PRINT parabens
         PRINT apertefim
-        MOV AH, 01
+        MOV AH, 01                   ; enter
         INT 21H
     endm
 
@@ -200,10 +200,9 @@ TITLE PROJETO 2 - SUDOKU
         CMP AL, '3'
         JNLE voltadificuldade
     endm 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;MACRO DA MATRIZ FACIL      
-; macro que verifica se a coordenada digitada pelo usuario é valida para alterar
+; MACROS DA MATRIZ FACIL      
+    ; macro que verifica se a coordenada digitada pelo usuario é valida para alterar
     verifica_possibilidadeFacil macro matriz
 
         CMP matriz[BX][SI], ?                   ; compara o elemento que o usuario quer editar com '?', se não for igual, 
@@ -211,7 +210,7 @@ TITLE PROJETO 2 - SUDOKU
                                                 ; o que é proibido, logo, exibi-se uma mensagem de erro e renicia o processo 
                                                 ; sem alterar nenhum valor na matriz
         JNE NAOFACIL
-        JMP FIMPOSSIBILIDADEFACIL                    ; se for igual a '?', quer dizer que é possivel inserir um valor na matriz, 
+        JMP FIMPOSSIBILIDADEFACIL               ; se for igual a '?', quer dizer que é possivel inserir um valor na matriz, 
                                                 ; então retorna para continuar o fluxo do programa normalmente
         NAOFACIL:
         PRINT erro                              
@@ -221,12 +220,12 @@ TITLE PROJETO 2 - SUDOKU
         FIMPOSSIBILIDADEFACIL:
     endm
 
-; macro que verifica se o valor digitado pelo usuário é o correto
+    ; macro que verifica se o valor digitado pelo usuário é o correto
     verifica_valorFacil macro matriz                  
 
         CMP matriz[BX][SI], AL                  ; compara o elemento que o usuario digitou com o elemento na mesma posicao na matriz correta
         JNE ERRADOVERIFICAFACIL                            
-        DEC varfacil                                 ; caso for o numero esperado, decrementa o contador que vai indicar o fim do programa  
+        DEC varfacil                            ; caso for o numero esperado, decrementa o contador que vai indicar o fim do programa  
         JMP FIMVERIFICAVALORFACIL
         ERRADOVERIFICAFACIL:
         PRINT valorerrado
@@ -236,7 +235,7 @@ TITLE PROJETO 2 - SUDOKU
         FIMVERIFICAVALORFACIL:
     endm
 
-; macro que imprime a matriz no quesito geral, com bordas, etc
+    ; macro que imprime a matriz no quesito geral, com bordas, etc
     imprime_matrizFacil macro matriz         
 
         paginasecundaria
@@ -309,8 +308,8 @@ TITLE PROJETO 2 - SUDOKU
     endm
 
 
-;MACRO DA MATRIZ MEDIA
-; macro que verifica se a coordenada digitada pelo usuario é valida para alterar
+; MACROS DA MATRIZ MEDIA
+    ; macro que verifica se a coordenada digitada pelo usuario é valida para alterar
     verifica_possibilidadeMedio macro matriz
 
         CMP matriz[BX][SI], ?                   ; compara o elemento que o usuario quer editar com '?', se não for igual, 
@@ -328,7 +327,7 @@ TITLE PROJETO 2 - SUDOKU
         FIMPOSSIBILIDADEMEDIO:
     endm
 
-; macro que verifica se o valor digitado pelo usuário é o correto
+    ; macro que verifica se o valor digitado pelo usuário é o correto
     verifica_valorMedio macro matriz                  
 
         CMP matriz[BX][SI], AL                  ; compara o elemento que o usuario digitou com o elemento na mesma posicao na matriz correta
@@ -343,7 +342,7 @@ TITLE PROJETO 2 - SUDOKU
         FIMVERIFICAVALORMEDIO:
     endm
 
-; macro que imprime a matriz no quesito geral, com bordas, etc
+    ; macro que imprime a matriz no quesito geral, com bordas, etc
     imprime_matrizmedio macro matriz         
 
         paginasecundaria
@@ -415,7 +414,7 @@ TITLE PROJETO 2 - SUDOKU
         FIMIMPRIMEMEDIO:
     endm
 
-;MACRO DA MATRIZ DIFICIL
+; MACROS DA MATRIZ DIFICIL
     ; macro que verifica se a coordenada digitada pelo usuario é valida para alterar
     verifica_possibilidadeDificil macro matriz
 
@@ -434,7 +433,7 @@ TITLE PROJETO 2 - SUDOKU
         FIMPOSSIBILIDADEDIFICIL:
     endm
 
-; macro que verifica se o valor digitado pelo usuário é o correto
+    ; macro que verifica se o valor digitado pelo usuário é o correto
     verifica_valorDificil macro matriz                  
 
         CMP matriz[BX][SI], AL                  ; compara o elemento que o usuario digitou com o elemento na mesma posicao na matriz correta
@@ -449,7 +448,7 @@ TITLE PROJETO 2 - SUDOKU
         FIMVERIFICAVALORDIFICIL:
     endm
 
-; macro que imprime a matriz no quesito geral, com bordas, etc
+    ; macro que imprime a matriz no quesito geral, com bordas, etc
     imprime_matrizdificil macro matriz         
 
         paginasecundaria
@@ -521,45 +520,46 @@ TITLE PROJETO 2 - SUDOKU
         FIMIMPRIMEDIFICIL:
     endm
         
-; procedimento main, que controla o fluxo do programa
-    main proc
+            ; procedimento main, que controla o fluxo do programa
+                main proc
 
-        MOV AX, @DATA;
-        MOV DS, AX          ; inicia o segmento de dados
-        paginaprincipal
+                    MOV AX, @DATA;
+                    MOV DS, AX          ; inicia o segmento de dados
+                    paginaprincipal
 
-        dificuldadeDesejada
-        CMP AL, '1'
-        JE FACIL
-        CMP AL, '2'
-        JE MEDIO
-        CMP AL, '3'
-        JE DIFICIL
+                    dificuldadeDesejada     
+                    CMP AL, '1'             ; if para dificuldades
+                    JE FACIL
+                    CMP AL, '2'
+                    JE MEDIO
+                    CMP AL, '3'
+                    JE DIFICIL
 
-        FACIL:
-        call leituraMatrizFacil
-        CMP varfacil, 0
-        JNZ FACIL
-        JMP FIM
-        
-        MEDIO:
-        call leituraMatrizMedia
-        CMP varmedio, 0
-        JNZ MEDIO
-        JMP FIM
+                    FACIL:
+                    call leituraMatrizFacil
+                    CMP varfacil, 0                 ; varfacil é o contador de numeros a serem acertados, se for zero significa que acabou o jogo
+                    JNZ FACIL
+                    JMP FIM
+                    
+                    MEDIO:
+                    call leituraMatrizMedia
+                    CMP varmedio, 0                 ; varmedio é o contador de numeros a serem acertados, se for zero significa que acabou o jogo
+                    JNZ MEDIO
+                    JMP FIM
 
-        DIFICIL:
-        call leituraMatrizDificil
-        CMP vardificil, 0
-        JNZ DIFICIL
+                    DIFICIL:
+                    call leituraMatrizDificil
+                    CMP vardificil, 0               ; vardificil é o contador de numeros a serem acertados, se for zero significa que acabou o jogo
+                    JNZ DIFICIL
 
-    FIM:
-        paginafinal
-        MOV AH,4CH
-        INT 21h
-    main endp
+                FIM:                                ; encerra o programa
+                    paginafinal
+                    MOV AH,4CH                      
+                    INT 21h
+                main endp
 
-; procedimento de leitura matriz facil
+    ; procedimento de leitura matriz facil
+    ; esse procedimento controla a chamada de todos os macros e execução do programa, é a base de funcionamento do algoritmo - FACIL
     leituraMatrizFacil proc
 
         VOLTAFACIL:
@@ -711,8 +711,8 @@ TITLE PROJETO 2 - SUDOKU
         JMP VOLTAFACIL
 
         CONTINUARFACIL:
-        AND AL, 0FH
-        verifica_valorFacil matrizfacilcompleta
+        AND AL, 0FH                                 
+        verifica_valorFacil matrizfacilcompleta     
         CMP DI, 1
         JE VOLTAFACIL                            
         MOV matrizfacil[BX][SI], AL                 ; passa o numero lido para a posicao [bx][si] da matriz
@@ -721,7 +721,8 @@ TITLE PROJETO 2 - SUDOKU
     leituraMatrizFacil endp
 
 
-; procedimento de leitura matriz media
+    ; procedimento de leitura matriz media
+    ; esse procedimento controla a chamada de todos os macros e execução do programa, é a base de funcionamento do algoritmo - MEDIO
     leituraMatrizMedia proc
 
         VOLTAMEDIA:
@@ -883,8 +884,8 @@ TITLE PROJETO 2 - SUDOKU
     leituraMatrizMedia endp
 
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; procedimento de leitura matriz media
+    ; procedimento de leitura matriz dificil
+    ; esse procedimento controla a chamada de todos os macros e execução do programa, é a base de funcionamento do algoritmo - DIFICIL
     leituraMatrizDificil proc
 
         VOLTADIFICIL:
