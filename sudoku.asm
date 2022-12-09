@@ -77,7 +77,7 @@ TITLE PROJETO 2 - SUDOKU
     qual db 10, "> $"
     cordenadasAI db "  a   b   c   d   e   f   g   h   i   $"
     cordenadas19 db "123456789"
-    digitecordenadas db 10, " Digite a coordenada que deseje atribuir um valor: $"
+    digitecordenadas db 10, " Digite a coordenada que deseja atribuir um valor(LinhaXColuna): $"
     digitenumero db 10, " Digite um numero:  $"
     valorinvalido db 10, " Valor invalido! Aperte enter para continuar!$"
     erro db 10, " Nao eh possivel alterar essa posicao! Aperte enter para continuar!$"
