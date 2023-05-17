@@ -1,4 +1,7 @@
 # Sudoku Assembly
+ 
+ Desenvolvido por Alexandre Oliveira e Hugo Tahara.
+ 
 ### Como executar o Sudoku
 
 Para executar o sudoku, basta a utilização
